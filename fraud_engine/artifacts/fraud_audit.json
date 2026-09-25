@@ -1,0 +1,293 @@
+{
+  "files": {
+    "fraud_transactions.csv": {
+      "rows": 15000,
+      "columns": [
+        "po_id",
+        "supplier_id",
+        "transaction_date",
+        "total_amount",
+        "average_historical_po_value",
+        "amount_deviation_percent",
+        "current_unit_price",
+        "average_historical_unit_price",
+        "market_price",
+        "price_deviation_from_market_percent",
+        "quantity",
+        "average_historical_quantity",
+        "quantity_deviation_percent",
+        "previous_po_count_30d",
+        "previous_po_value_30d",
+        "similar_po_count_7d",
+        "duplicate_similarity_flag",
+        "split_transaction_flag",
+        "unusual_timing_flag",
+        "supplier_inactive_days_before_po",
+        "bank_account_recently_changed",
+        "address_recently_changed",
+        "contact_recently_changed"
+      ],
+      "dtypes": {
+        "po_id": "str",
+        "supplier_id": "str",
+        "transaction_date": "str",
+        "total_amount": "float64",
+        "average_historical_po_value": "float64",
+        "amount_deviation_percent": "float64",
+        "current_unit_price": "float64",
+        "average_historical_unit_price": "float64",
+        "market_price": "float64",
+        "price_deviation_from_market_percent": "float64",
+        "quantity": "int64",
+        "average_historical_quantity": "float64",
+        "quantity_deviation_percent": "float64",
+        "previous_po_count_30d": "int64",
+        "previous_po_value_30d": "float64",
+        "similar_po_count_7d": "int64",
+        "duplicate_similarity_flag": "int64",
+        "split_transaction_flag": "int64",
+        "unusual_timing_flag": "int64",
+        "supplier_inactive_days_before_po": "int64",
+        "bank_account_recently_changed": "int64",
+        "address_recently_changed": "int64",
+        "contact_recently_changed": "int64"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "supplier_changes.csv": {
+      "rows": 300,
+      "columns": [
+        "change_id",
+        "supplier_id",
+        "change_date",
+        "bank_account_changed",
+        "address_changed",
+        "phone_changed",
+        "email_changed",
+        "tax_id_changed",
+        "previous_bank_account_hash",
+        "new_bank_account_hash",
+        "previous_address_hash",
+        "new_address_hash",
+        "change_reason",
+        "days_before_related_po"
+      ],
+      "dtypes": {
+        "change_id": "str",
+        "supplier_id": "str",
+        "change_date": "str",
+        "bank_account_changed": "int64",
+        "address_changed": "int64",
+        "phone_changed": "int64",
+        "email_changed": "int64",
+        "tax_id_changed": "int64",
+        "previous_bank_account_hash": "str",
+        "new_bank_account_hash": "str",
+        "previous_address_hash": "str",
+        "new_address_hash": "str",
+        "change_reason": "str",
+        "days_before_related_po": "int64"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "payment_transactions.csv": {
+      "rows": 14659,
+      "columns": [
+        "payment_id",
+        "po_id",
+        "supplier_id",
+        "payment_date",
+        "payment_amount",
+        "payment_status",
+        "payment_method",
+        "bank_account_reference",
+        "payment_sequence_number",
+        "days_after_po",
+        "payment_amount_vs_po_percent",
+        "split_payment_flag",
+        "unusual_payment_timing_flag"
+      ],
+      "dtypes": {
+        "payment_id": "str",
+        "po_id": "str",
+        "supplier_id": "str",
+        "payment_date": "str",
+        "payment_amount": "float64",
+        "payment_status": "str",
+        "payment_method": "str",
+        "bank_account_reference": "str",
+        "payment_sequence_number": "int64",
+        "days_after_po": "int64",
+        "payment_amount_vs_po_percent": "float64",
+        "split_payment_flag": "int64",
+        "unusual_payment_timing_flag": "int64"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "fraud_labels.csv": {
+      "rows": 15000,
+      "columns": [
+        "po_id",
+        "fraud_label",
+        "fraud_type",
+        "fraud_severity",
+        "fraud_reason"
+      ],
+      "dtypes": {
+        "po_id": "str",
+        "fraud_label": "int64",
+        "fraud_type": "str",
+        "fraud_severity": "str",
+        "fraud_reason": "str"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "fraud_test_cases.csv": {
+      "rows": 150,
+      "columns": [
+        "po_id",
+        "supplier_id",
+        "transaction_date",
+        "total_amount",
+        "average_historical_po_value",
+        "amount_deviation_percent",
+        "current_unit_price",
+        "average_historical_unit_price",
+        "market_price",
+        "price_deviation_from_market_percent",
+        "quantity",
+        "average_historical_quantity",
+        "quantity_deviation_percent",
+        "previous_po_count_30d",
+        "previous_po_value_30d",
+        "similar_po_count_7d",
+        "duplicate_similarity_flag",
+        "split_transaction_flag",
+        "unusual_timing_flag",
+        "supplier_inactive_days_before_po",
+        "bank_account_recently_changed",
+        "address_recently_changed",
+        "contact_recently_changed"
+      ],
+      "dtypes": {
+        "po_id": "str",
+        "supplier_id": "str",
+        "transaction_date": "str",
+        "total_amount": "float64",
+        "average_historical_po_value": "float64",
+        "amount_deviation_percent": "float64",
+        "current_unit_price": "float64",
+        "average_historical_unit_price": "float64",
+        "market_price": "float64",
+        "price_deviation_from_market_percent": "float64",
+        "quantity": "int64",
+        "average_historical_quantity": "float64",
+        "quantity_deviation_percent": "float64",
+        "previous_po_count_30d": "int64",
+        "previous_po_value_30d": "float64",
+        "similar_po_count_7d": "int64",
+        "duplicate_similarity_flag": "int64",
+        "split_transaction_flag": "int64",
+        "unusual_timing_flag": "int64",
+        "supplier_inactive_days_before_po": "int64",
+        "bank_account_recently_changed": "int64",
+        "address_recently_changed": "int64",
+        "contact_recently_changed": "int64"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "fraud_ground_truth.csv": {
+      "rows": 150,
+      "columns": [
+        "po_id",
+        "expected_fraud_label",
+        "expected_fraud_level",
+        "expected_fraud_type",
+        "expected_primary_reasons"
+      ],
+      "dtypes": {
+        "po_id": "str",
+        "expected_fraud_label": "int64",
+        "expected_fraud_level": "str",
+        "expected_fraud_type": "str",
+        "expected_primary_reasons": "str"
+      },
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    }
+  },
+  "keys": {
+    "transaction_po_duplicates": 0,
+    "change_id_duplicates": 0,
+    "payment_id_duplicates": 0,
+    "label_po_duplicates": 0,
+    "test_po_duplicates": 0,
+    "truth_po_duplicates": 0
+  },
+  "relationships": {
+    "payment_orphan_pos": 0,
+    "payment_supplier_mismatch": 0,
+    "change_orphan_suppliers": 0,
+    "label_orphan_pos": 0,
+    "test_truth_id_mismatch": 0
+  },
+  "dates": {
+    "transaction_min": "2023-01-01",
+    "transaction_max": "2026-08-31",
+    "payment_before_transaction_count": 0,
+    "test_after_training_max": false
+  },
+  "distributions": {
+    "fraud_label": {
+      "0": 11584,
+      "1": 3416
+    },
+    "fraud_type": {
+      "NONE": 11584,
+      "MULTIPLE_SIGNALS": 1805,
+      "PRICE_MANIPULATION": 1055,
+      "ABNORMAL_TRANSACTION": 489,
+      "SUPPLIER_ACCOUNT_CHANGE": 32,
+      "QUANTITY_MANIPULATION": 28,
+      "SPLIT_TRANSACTION": 7
+    }
+  },
+  "leakage": {
+    "training_features_exclude_target_columns": true,
+    "fraud_test_cases_excluded_from_training": true,
+    "fraud_ground_truth_excluded_from_training": true,
+    "feature_columns": [
+      "total_amount",
+      "average_historical_po_value",
+      "amount_deviation_percent",
+      "current_unit_price",
+      "average_historical_unit_price",
+      "market_price",
+      "price_deviation_from_market_percent",
+      "quantity",
+      "average_historical_quantity",
+      "quantity_deviation_percent",
+      "previous_po_count_30d",
+      "previous_po_value_30d",
+      "similar_po_count_7d",
+      "duplicate_similarity_flag",
+      "split_transaction_flag",
+      "unusual_timing_flag",
+      "supplier_inactive_days_before_po",
+      "bank_account_recently_changed",
+      "address_recently_changed",
+      "contact_recently_changed"
+    ],
+    "excluded_identifiers_and_dates": [
+      "po_id",
+      "supplier_id",
+      "transaction_date"
+    ]
+  },
+  "validation_passed": true
+}

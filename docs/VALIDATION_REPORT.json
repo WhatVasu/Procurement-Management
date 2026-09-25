@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-09-23",
+  "random_seed": 42,
+  "counts": {
+    "suppliers": 150,
+    "products": 300,
+    "historical_purchase_orders": 15000,
+    "po_line_items": 46419,
+    "supplier_performance_records": 3338,
+    "market_price_records": 13500,
+    "risk_labels": 15000,
+    "new_po_test_cases": 150
+  },
+  "checks": {
+    "no_duplicate_po_ids": true,
+    "no_orphan_supplier_ids": true,
+    "no_orphan_product_ids": true,
+    "no_orphan_po_item_ids": true,
+    "po_totals_reconcile_with_line_items_within_0_05": true,
+    "market_prices_cover_required_months": true,
+    "quality_rate_0_100": true,
+    "delivery_delay_rate_0_100": true,
+    "positive_prices": true,
+    "positive_quantities": true,
+    "risk_scores_0_100": true,
+    "risk_levels_valid": true,
+    "historical_labels_use_only_prior_month_performance": true,
+    "future_test_cases_after_training_period": true,
+    "ground_truth_separated_from_prediction_inputs": true
+  },
+  "risk_distribution": {
+    "LOW": 0.423,
+    "MEDIUM": 0.3024,
+    "HIGH": 0.2746
+  },
+  "total_reconciliation_max_abs_difference": 1.1641532182693481e-10,
+  "validation_passed": true
+}

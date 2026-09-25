@@ -1,0 +1,219 @@
+{
+  "split": {
+    "train_rows": 10500,
+    "validation_rows": 2250,
+    "test_rows": 2250,
+    "train_end": "2025-07-20",
+    "validation_end": "2026-02-12",
+    "test_start": "2026-02-12"
+  },
+  "models": {
+    "logistic_regression": {
+      "validation": {
+        "accuracy": 0.6836,
+        "precision_weighted": 0.6609,
+        "recall_weighted": 0.6836,
+        "f1_weighted": 0.6692,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            369,
+            84,
+            90
+          ],
+          [
+            50,
+            1028,
+            130
+          ],
+          [
+            138,
+            220,
+            141
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8419,
+        "high_precision": 0.6625,
+        "high_recall": 0.6796,
+        "high_predicted_probability_mean": 0.2525
+      },
+      "test": {
+        "accuracy": 0.7253,
+        "precision_weighted": 0.6752,
+        "recall_weighted": 0.7253,
+        "f1_weighted": 0.6849,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            542,
+            87,
+            45
+          ],
+          [
+            63,
+            1040,
+            46
+          ],
+          [
+            113,
+            264,
+            50
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8657,
+        "high_precision": 0.7549,
+        "high_recall": 0.8042,
+        "high_predicted_probability_mean": 0.2936
+      }
+    },
+    "random_forest": {
+      "validation": {
+        "accuracy": 0.6951,
+        "precision_weighted": 0.6678,
+        "recall_weighted": 0.6951,
+        "f1_weighted": 0.6745,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            361,
+            102,
+            80
+          ],
+          [
+            42,
+            1068,
+            98
+          ],
+          [
+            118,
+            246,
+            135
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8452,
+        "high_precision": 0.6929,
+        "high_recall": 0.6648,
+        "high_predicted_probability_mean": 0.2504
+      },
+      "test": {
+        "accuracy": 0.7298,
+        "precision_weighted": 0.6829,
+        "recall_weighted": 0.7298,
+        "f1_weighted": 0.6661,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            517,
+            142,
+            15
+          ],
+          [
+            32,
+            1108,
+            9
+          ],
+          [
+            81,
+            329,
+            17
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8678,
+        "high_precision": 0.8206,
+        "high_recall": 0.7671,
+        "high_predicted_probability_mean": 0.2741
+      }
+    },
+    "extra_trees": {
+      "validation": {
+        "accuracy": 0.6747,
+        "precision_weighted": 0.6566,
+        "recall_weighted": 0.6747,
+        "f1_weighted": 0.6545,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            294,
+            151,
+            98
+          ],
+          [
+            32,
+            1075,
+            101
+          ],
+          [
+            74,
+            276,
+            149
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8217,
+        "high_precision": 0.735,
+        "high_recall": 0.5414,
+        "high_predicted_probability_mean": 0.2297
+      },
+      "test": {
+        "accuracy": 0.6996,
+        "precision_weighted": 0.6661,
+        "recall_weighted": 0.6996,
+        "f1_weighted": 0.6399,
+        "confusion_matrix_labels": [
+          "HIGH",
+          "LOW",
+          "MEDIUM"
+        ],
+        "confusion_matrix": [
+          [
+            441,
+            211,
+            22
+          ],
+          [
+            24,
+            1113,
+            12
+          ],
+          [
+            46,
+            361,
+            20
+          ]
+        ],
+        "roc_auc_ovr_weighted": 0.8392,
+        "high_precision": 0.863,
+        "high_recall": 0.6543,
+        "high_predicted_probability_mean": 0.2482
+      }
+    }
+  },
+  "selected_model": "random_forest",
+  "future_evaluation": {
+    "rows": 150,
+    "accuracy_level": 0.7333,
+    "f1_weighted_level": 0.7003,
+    "high_precision": 1.0,
+    "high_recall": 0.2273,
+    "score_mae": 18.4493
+  }
+}

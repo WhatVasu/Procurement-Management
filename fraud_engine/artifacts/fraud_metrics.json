@@ -1,0 +1,82 @@
+{
+  "training": {
+    "rows": 15000,
+    "stratified_test_rows": 3000,
+    "models": {
+      "logistic_regression": {
+        "accuracy": 0.6567,
+        "precision": 0.3469,
+        "recall": 0.5754,
+        "f1": 0.4328,
+        "roc_auc": 0.6909,
+        "pr_auc": 0.3616,
+        "confusion_matrix": [
+          [
+            1577,
+            740
+          ],
+          [
+            290,
+            393
+          ]
+        ],
+        "fraud_recall": 0.5754
+      },
+      "random_forest": {
+        "accuracy": 0.7303,
+        "precision": 0.3755,
+        "recall": 0.2782,
+        "f1": 0.3196,
+        "roc_auc": 0.6904,
+        "pr_auc": 0.3468,
+        "confusion_matrix": [
+          [
+            2001,
+            316
+          ],
+          [
+            493,
+            190
+          ]
+        ],
+        "fraud_recall": 0.2782
+      },
+      "extra_trees": {
+        "accuracy": 0.7687,
+        "precision": 0.4179,
+        "recall": 0.041,
+        "f1": 0.0747,
+        "roc_auc": 0.6775,
+        "pr_auc": 0.3425,
+        "confusion_matrix": [
+          [
+            2278,
+            39
+          ],
+          [
+            655,
+            28
+          ]
+        ],
+        "fraud_recall": 0.041
+      }
+    },
+    "selected_model": "logistic_regression",
+    "excluded_from_training": [
+      "fraud_test_cases.csv",
+      "fraud_ground_truth.csv"
+    ]
+  },
+  "thresholds": {
+    "medium_score": 35.0,
+    "high_score": 70.0,
+    "flag_score": 70.0
+  },
+  "external_evaluation": {
+    "rows": 150,
+    "accuracy": 0.5733,
+    "precision": 1.0,
+    "recall": 0.2471,
+    "f1": 0.3962
+  }
+}

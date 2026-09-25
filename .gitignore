@@ -1,0 +1,57 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build and test output
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local tooling and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Dataset files
+data/
+datasets/
+*.csv
+*.tsv
+*.jsonl
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Trained models
+models/
+model/
+checkpoints/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.joblib
+*.keras
+*.h5
+
+# Keep source code trackable.
+!src/
+!src/**

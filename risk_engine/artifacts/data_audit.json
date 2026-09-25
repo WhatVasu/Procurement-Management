@@ -1,0 +1,157 @@
+{
+  "files": {
+    "market_prices.csv": {
+      "rows": 13500,
+      "columns": [
+        "product_id",
+        "month",
+        "market_reference_price",
+        "market_lower_bound",
+        "market_upper_bound"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "new_po_ground_truth.csv": {
+      "rows": 150,
+      "columns": [
+        "po_id",
+        "ground_truth_risk_score",
+        "ground_truth_risk_level"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "new_po_test_cases.csv": {
+      "rows": 150,
+      "columns": [
+        "po_id",
+        "po_date",
+        "supplier_id",
+        "buyer_id",
+        "department",
+        "currency",
+        "payment_terms",
+        "delivery_window_days",
+        "product_id",
+        "quantity",
+        "unit_price"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "products.csv": {
+      "rows": 300,
+      "columns": [
+        "product_id",
+        "product_name",
+        "category",
+        "subcategory",
+        "department",
+        "unit_of_measure",
+        "criticality",
+        "standard_unit_price"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "purchase_order_items.csv": {
+      "rows": 46419,
+      "columns": [
+        "po_id",
+        "line_item_id",
+        "product_id",
+        "quantity",
+        "unit_price",
+        "requested_delivery_date"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "purchase_orders.csv": {
+      "rows": 15000,
+      "columns": [
+        "po_id",
+        "po_date",
+        "supplier_id",
+        "buyer_id",
+        "department",
+        "currency",
+        "payment_terms",
+        "delivery_window_days",
+        "shipping_method",
+        "total_po_value"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "risk_labels.csv": {
+      "rows": 15000,
+      "columns": [
+        "po_id",
+        "risk_score",
+        "risk_level",
+        "primary_risk_reason",
+        "secondary_risk_reason"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "supplier_performance.csv": {
+      "rows": 3338,
+      "columns": [
+        "supplier_id",
+        "month",
+        "total_orders",
+        "completed_orders",
+        "on_time_deliveries",
+        "late_deliveries",
+        "quality_checked_units",
+        "defective_units",
+        "cancelled_orders",
+        "disputed_orders",
+        "average_delivery_delay_days",
+        "quality_rate",
+        "delivery_delay_rate",
+        "cancellation_rate",
+        "dispute_rate"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    },
+    "suppliers.csv": {
+      "rows": 150,
+      "columns": [
+        "supplier_id",
+        "supplier_name",
+        "supplier_category",
+        "country",
+        "region",
+        "supplier_tier",
+        "supplier_start_date",
+        "supplier_status"
+      ],
+      "missing_cells": 0,
+      "duplicate_rows": 0
+    }
+  },
+  "relationships": {
+    "orphan_po_items": 0,
+    "orphan_suppliers": 0,
+    "orphan_products": 0,
+    "orphan_labels": 0,
+    "duplicate_po_ids": 0,
+    "duplicate_line_item_ids": 0
+  },
+  "leakage": {
+    "target_columns": [
+      "risk_score",
+      "risk_level",
+      "primary_risk_reason",
+      "secondary_risk_reason"
+    ],
+    "excluded_from_features": true,
+    "historical_performance_cutoff": "strictly before PO month; latest three months",
+    "future_ground_truth_loaded": false
+  }
+}
