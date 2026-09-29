@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RiskWise Control Room</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&display=swap');
+    :root { --ink:#18201d; --muted:#68716d; --paper:#f4f1e9; --panel:#fffdf8; --line:#d9d7cf; --red:#bf3d2f; --red-soft:#f7ded7; --amber:#b57919; --green:#28684d; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:Manrope, sans-serif; }
+    body:before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.32; background-image:linear-gradient(rgba(24,32,29,.045) 1px, transparent 1px),linear-gradient(90deg, rgba(24,32,29,.045) 1px, transparent 1px); background-size:32px 32px; }
+    main { position:relative; max-width:1280px; margin:0 auto; padding:34px 28px 56px; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:28px; border-bottom:1px solid var(--line); }
+    .eyebrow { font:500 12px 'DM Mono', monospace; letter-spacing:.08em; text-transform:uppercase; color:var(--red); }
+    h1 { margin:8px 0 0; font-size:clamp(32px,5vw,62px); line-height:.98; letter-spacing:-.04em; max-width:600px; }
+    .header-note { max-width:275px; color:var(--muted); font-size:13px; line-height:1.6; }
+    button { border:0; cursor:pointer; font:700 13px Manrope, sans-serif; }
+    #run { padding:14px 18px; background:var(--ink); color:#fffdf8; border-radius:3px; min-width:156px; }
+    .header-actions { display:flex; align-items:center; gap:10px; }
+    .header-actions a { padding:13px 16px; border:1px solid var(--line); color:var(--ink); text-decoration:none; font-size:13px; font-weight:700; }
+    #run:disabled { opacity:.5; cursor:wait; }
+    .meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:24px 0 18px; font:500 12px 'DM Mono', monospace; color:var(--muted); }
+    .dot { width:8px; height:8px; background:var(--green); border-radius:50%; }
+    .memory-health { display:inline-flex; align-items:center; gap:7px; margin-left:auto; }
+    .memory-dot { width:7px; height:7px; border-radius:50%; background:var(--amber); }
+    .memory-health[data-state="up"] .memory-dot { background:var(--green); }
+    .memory-health[data-state="unreachable"] .memory-dot { background:var(--red); }
+    .memory-health[data-state="disabled"] .memory-dot { background:var(--muted); }
+    .metrics { display:grid; grid-template-columns:repeat(4,1fr); border-block:1px solid var(--line); margin-bottom:34px; }
+    .metric { padding:22px 20px 24px 0; border-right:1px solid var(--line); margin-right:20px; }
+    .metric:last-child { border:0; margin:0; }
+    .metric-label { color:var(--muted); font:500 11px 'DM Mono', monospace; text-transform:uppercase; }
+    .metric-value { margin-top:8px; font-size:38px; font-weight:800; letter-spacing:-.06em; }
+    .metric-value.red { color:var(--red); }
+    .metric { cursor:pointer; transition:background .2s ease; }
+    .metric:hover, .metric.active { background:#ebe7dc; }
+    .content { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(300px,.7fr); gap:28px; align-items:start; }
+    .section-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; }
+    h2 { font-size:20px; margin:0; letter-spacing:-.03em; }
+    .count { color:var(--red); font:500 12px 'DM Mono', monospace; }
+    .explorer { grid-column:1 / -1; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 12px; }
+    input, select, textarea { border:1px solid var(--line); background:var(--panel); color:var(--ink); padding:11px 12px; font:500 12px 'DM Mono', monospace; }
+    input { flex:1 1 240px; min-width:180px; }
+    select { min-width:150px; }
+    .toolbar button { padding:11px 14px; background:var(--red); color:#fffdf8; }
+    .toolbar button.secondary { background:var(--panel); border:1px solid var(--line); color:var(--ink); }
+    .pagination { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+    .pagination button { padding:9px 12px; background:var(--panel); border:1px solid var(--line); color:var(--ink); }
+    .pagination button:disabled { opacity:.4; cursor:not-allowed; }
+    .page-label { color:var(--muted); font:500 11px 'DM Mono', monospace; }
+    .results-meta { color:var(--muted); font:500 11px 'DM Mono', monospace; margin:0 0 10px; }
+    .explorer table { min-width:760px; }
+    .explorer tbody tr { cursor:pointer; transition:background .15s ease; }
+    .explorer tbody tr:hover, .explorer tbody tr.selected { background:#f1ede2; }
+    .score-bar { display:flex; align-items:center; gap:8px; min-width:110px; }
+    .score-track { width:58px; height:5px; background:#e2dfd5; }
+    .score-fill { display:block; height:100%; background:var(--red); }
+    .status-review { background:#f5e8c9; color:var(--amber); }
+    .status-approve { background:#dcebe2; color:var(--green); }
+    .detail { background:var(--panel); border:1px solid var(--line); padding:22px; margin-top:18px; }
+    .detail h3 { margin:6px 0 18px; font-size:22px; }
+    .detail-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px 20px; }
+    .detail-label { color:var(--muted); font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    .detail-value { margin-top:4px; font-size:14px; line-height:1.4; }
+    .detail-wide { grid-column:1 / -1; }
+    .memory-context { margin-top:20px; padding-top:17px; border-top:1px solid var(--line); }
+    .memory-context-head { display:flex; justify-content:space-between; gap:16px; align-items:baseline; }
+    .memory-context-state { color:var(--muted); font:500 10px 'DM Mono', monospace; }
+    .memory-disclaimer { margin-top:4px; color:var(--muted); font:500 10px 'DM Mono', monospace; }
+    .memory-list { margin:12px 0 18px; color:#4c5651; font-size:13px; line-height:1.55; }
+    .memory-list ul { margin:0; padding-left:18px; }
+    .memory-list li + li { margin-top:8px; }
+    .outcome-form { display:grid; grid-template-columns:minmax(0,1fr) minmax(180px,.7fr) auto; gap:9px; align-items:end; }
+    .outcome-field { display:grid; gap:6px; }
+    .outcome-field label { color:var(--muted); font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    .outcome-field textarea { width:100%; min-height:42px; resize:vertical; }
+    .outcome-form button { min-height:42px; padding:0 13px; background:var(--ink); color:var(--panel); }
+    .outcome-status { min-height:18px; margin-top:7px; color:var(--muted); font:500 10px 'DM Mono', monospace; }
+    .table-wrap { overflow:auto; background:var(--panel); border:1px solid var(--line); }
+    table { width:100%; border-collapse:collapse; min-width:640px; }
+    th, td { padding:15px 16px; text-align:left; border-bottom:1px solid var(--line); font-size:13px; }
+    th { color:var(--muted); font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    tbody tr:last-child td { border-bottom:0; }
+    td:first-child { font:500 12px 'DM Mono', monospace; }
+    .score { color:var(--red); font-weight:800; }
+    .badge { display:inline-block; padding:5px 7px; background:var(--red-soft); color:var(--red); font:500 10px 'DM Mono', monospace; }
+    .reason { color:#4c5651; max-width:330px; line-height:1.4; }
+    .insight { background:var(--ink); color:#f9f5ec; padding:25px; min-height:236px; }
+    .insight .eyebrow { color:#e19a8b; }
+    .insight h2 { margin:11px 0 18px; color:#fffdf8; }
+    #reasoning { color:#cad0c9; font-size:14px; line-height:1.7; }
+    .reasoning-records { display:grid; gap:12px; margin-top:22px; max-height:430px; overflow:auto; }
+    .reasoning-record { border-top:1px solid #3e4843; padding-top:12px; }
+    .reasoning-record-head { display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .reasoning-po { color:#fffdf8; font:500 11px 'DM Mono', monospace; }
+    .reasoning-label { color:#9ca8a1; font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    .reasoning-value { margin-top:5px; color:#fffdf8; font-size:13px; line-height:1.4; }
+    .reasoning-action { color:#e19a8b; font-weight:700; }
+    .provider { margin-top:26px; padding-top:16px; border-top:1px solid #3e4843; color:#9ca8a1; font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    .empty, .error { padding:34px; color:var(--muted); background:var(--panel); border:1px solid var(--line); }
+    .error { color:var(--red); }
+    dialog { width:min(520px, calc(100vw - 32px)); border:1px solid var(--line); padding:0; color:var(--ink); background:var(--panel); }
+    dialog::backdrop { background:rgba(24,32,29,.58); }
+    .flag-dialog { padding:26px; }
+    .flag-dialog h2 { margin:8px 0 10px; color:var(--red); font-size:25px; }
+    .flag-dialog p { color:var(--muted); line-height:1.6; }
+    .flag-dialog dl { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0; }
+    .flag-dialog dt { color:var(--muted); font:500 10px 'DM Mono', monospace; text-transform:uppercase; }
+    .flag-dialog dd { margin:4px 0 0; font-size:14px; }
+    .flag-dialog-actions { display:flex; justify-content:flex-end; gap:10px; }
+    .flag-dialog-actions button { padding:12px 15px; background:var(--ink); color:var(--panel); }
+    .flag-dialog-actions button.secondary { background:transparent; border:1px solid var(--line); color:var(--ink); }
+    @media (max-width:760px) { main { padding:22px 16px 40px; } header { display:block; } .header-note { margin:18px 0; } .header-actions { flex-direction:column; align-items:stretch; } .header-actions a, #run { width:100%; text-align:center; } .metrics { grid-template-columns:repeat(2,1fr); } .metric:nth-child(2) { border:0; margin:0; } .content { grid-template-columns:1fr; } .detail-grid { grid-template-columns:1fr; } .detail-wide { grid-column:auto; } .outcome-form { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><div class="eyebrow">RiskWise / procurement intelligence</div><h1>Control room for the next PO batch.</h1></div>
+      <div><p class="header-note">Run the model pipeline, surface the exceptions, and give reviewers a reason to act.</p><div class="header-actions"><a href="/procurement">New purchase order</a><button id="run" type="button">Run pipeline</button></div></div>
+    </header>
+    <div class="meta"><span class="dot"></span><span id="status">Ready for a new assessment</span><span>·</span><span id="updated">No run yet</span><span class="memory-health" id="memory-health" data-state="checking"><span class="memory-dot"></span><span id="memory-status">Memory: checking</span></span></div>
+    <section class="metrics" aria-label="Pipeline summary">
+      <div class="metric active" data-filter="ALL"><div class="metric-label">POs assessed</div><div class="metric-value" id="total">—</div></div>
+      <div class="metric" data-filter="ESCALATE"><div class="metric-label">Red flagged</div><div class="metric-value red" id="flagged">—</div></div>
+      <div class="metric" data-filter="REVIEW"><div class="metric-label">Needs review</div><div class="metric-value" id="review">—</div></div>
+      <div class="metric" data-filter="APPROVE"><div class="metric-label">Approved</div><div class="metric-value" id="approved">—</div></div>
+    </section>
+    <div class="content">
+      <section class="explorer">
+        <div class="section-head"><h2>Purchase order explorer</h2><span class="count" id="result-count">Awaiting run</span></div>
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search PO, supplier, risk reason..." aria-label="Search purchase orders">
+          <select id="status-filter" aria-label="Filter by status"><option value="ALL">All statuses</option><option value="ESCALATE">Red flagged</option><option value="REVIEW">Needs review</option><option value="APPROVE">Approved</option></select>
+          <select id="sort" aria-label="Sort purchase orders"><option value="score-desc">Highest score</option><option value="score-asc">Lowest score</option><option value="po-asc">PO ID</option><option value="status">Status</option></select>
+          <select id="page-size" aria-label="Purchase orders per page"><option value="10">10 per page</option><option value="25" selected>25 per page</option><option value="50">50 per page</option></select>
+          <button id="export" type="button">Export visible CSV</button>
+          <button id="clear" class="secondary" type="button">Clear filters</button>
+        </div>
+        <div class="results-meta" id="results-meta">Run the pipeline to load purchase orders.</div>
+        <div id="table" class="empty">Run the pipeline to load purchase orders.</div>
+        <div class="pagination" id="pagination" hidden><button id="previous-page" type="button">Previous</button><span class="page-label" id="page-label"></span><button id="next-page" type="button">Next</button></div>
+        <div id="detail" class="detail" hidden></div>
+      </section>
+      <aside class="insight"><div class="eyebrow">Analyst reasoning</div><h2>What needs attention?</h2><div id="reasoning">The reasoning layer will summarize the highest-risk cases after the pipeline runs.</div><div id="reasoning-records" class="reasoning-records"><div class="reasoning-value">No structured records yet.</div></div><div class="provider" id="provider">Reasoning provider: pending</div></aside>
+    </div>
+  </main>
+  <dialog id="flag-dialog" aria-labelledby="flag-title">
+    <div class="flag-dialog">
+      <div class="eyebrow">Procurement alert</div>
+      <h2 id="flag-title">Purchase order flagged</h2>
+      <p id="flag-summary"></p>
+      <dl><div><dt>PO ID</dt><dd id="flag-po-id"></dd></div><div><dt>Overall score</dt><dd id="flag-score"></dd></div><div><dt>Supplier</dt><dd id="flag-supplier"></dd></div><div><dt>Risk signal</dt><dd id="flag-reason"></dd></div></dl>
+      <div class="flag-dialog-actions"><button id="flag-dismiss" class="secondary" type="button">Dismiss</button><button id="flag-review" type="button">Review PO</button></div>
+    </div>
+  </dialog>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const run = $('run');
+    const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+    let allRecords = [];
+    let visibleRecords = [];
+    let selectedId = null;
+    let flaggedPOToReview = null;
+    let memoryRequestId = 0;
+    const state = { search: '', status: 'ALL', sort: 'score-desc', page: 1, pageSize: 25 };
+    function render(data) {
+      const reasoning = Array.isArray(data.reasoning)
+        ? {summary: `${data.reasoning.length} purchase orders flagged for review.`, provider: 'Groq / LangChain', items: data.reasoning}
+        : data.reasoning;
+      allRecords = data.all_pos || [];
+      $('total').textContent = data.total_pos;
+      $('flagged').textContent = data.flagged_count;
+      $('review').textContent = data.review_count;
+      $('approved').textContent = data.approve_count;
+      $('reasoning').textContent = reasoning.summary;
+      renderReasoningRecords(reasoning.items || reasoning);
+      $('provider').textContent = `Reasoning provider: ${reasoning.provider}`;
+      $('status').textContent = 'Pipeline complete';
+      $('updated').textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      applyFilters();
+      showPendingFlag();
+    }
+    function renderReasoningRecords(records) {
+      const items = Array.isArray(records) ? records : [];
+      $('reasoning-records').innerHTML = items.length
+        ? items.map(item => `<article class="reasoning-record"><div class="reasoning-record-head"><span class="reasoning-po">${escapeHTML(item.po_id)}</span><span class="badge status-${escapeHTML(item.risk_tier.toLowerCase() === 'critical' ? 'escalate' : item.risk_tier.toLowerCase() === 'high' ? 'escalate' : 'review')}">${escapeHTML(item.risk_tier)}</span></div><div class="reasoning-value">${escapeHTML(item.reason)}</div><div class="reasoning-label">Recommended action</div><div class="reasoning-value reasoning-action">${escapeHTML(item.recommended_action)}</div></article>`).join('')
+        : '<div class="reasoning-value">No structured records returned.</div>';
+    }
+    function showPendingFlag() {
+      const dialog = $('flag-dialog');
+      if (dialog.open) return;
+      const po = allRecords.find(item => item.is_submitted && item.overall_status === 'ESCALATE' && !sessionStorage.getItem(`riskwise-flag-seen:${item.po_id}`));
+      if (!po) return;
+      sessionStorage.setItem(`riskwise-flag-seen:${po.po_id}`, 'true');
+      flaggedPOToReview = po.po_id;
+      $('flag-summary').textContent = po.primary_fraud_reason && po.primary_fraud_reason !== 'No fraud features supplied.'
+        ? `${po.primary_risk_reason} ${po.primary_fraud_reason}`
+        : po.primary_risk_reason;
+      $('flag-po-id').textContent = po.po_id;
+      $('flag-score').textContent = `${po.overall_score.toFixed(1)} / 100`;
+      $('flag-supplier').textContent = po.supplier_id || 'Not provided';
+      $('flag-reason').textContent = po.primary_risk_reason;
+      dialog.showModal();
+    }
+    function applyFilters() {
+      const query = state.search.toLowerCase();
+      visibleRecords = allRecords.filter(po => {
+        const searchable = [po.po_id, po.risk_level, po.overall_status, po.primary_risk_reason, po.primary_fraud_reason].join(' ').toLowerCase();
+        return (state.status === 'ALL' || po.overall_status === state.status) && (!query || searchable.includes(query));
+      });
+      visibleRecords.sort((a, b) => {
+        if (state.sort === 'score-asc') return a.overall_score - b.overall_score;
+        if (state.sort === 'po-asc') return a.po_id.localeCompare(b.po_id);
+        if (state.sort === 'status') return a.overall_status.localeCompare(b.overall_status);
+        return b.overall_score - a.overall_score;
+      });
+      state.page = Math.min(state.page, Math.max(1, Math.ceil(visibleRecords.length / state.pageSize)));
+      renderExplorer();
+      updateMetricState();
+    }
+    function renderExplorer() {
+      $('result-count').textContent = `${visibleRecords.length} of ${allRecords.length} purchase orders`;
+      $('results-meta').textContent = visibleRecords.length ? 'Select a row to inspect its risk and fraud signals.' : 'No purchase orders match the current filters.';
+      if (!visibleRecords.length) { $('table').className='empty'; $('table').textContent='No purchase orders match these filters.'; $('pagination').hidden=true; return; }
+      const pageCount = Math.ceil(visibleRecords.length / state.pageSize);
+      const pageRecords = visibleRecords.slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
+      $('table').className='table-wrap';
+      $('table').innerHTML = `<table><thead><tr><th>PO ID</th><th>Overall score</th><th>Status</th><th>Risk / fraud</th><th>Primary signal</th></tr></thead><tbody>${pageRecords.map(po => `<tr data-po-id="${escapeHTML(po.po_id)}" class="${po.po_id === selectedId ? 'selected' : ''}"><td>${escapeHTML(po.po_id)}</td><td><div class="score-bar"><span class="score">${po.overall_score.toFixed(1)}</span><span class="score-track"><span class="score-fill" style="width:${Math.min(po.overall_score, 100)}%"></span></span></div></td><td><span class="badge status-${escapeHTML(po.overall_status.toLowerCase())}">${escapeHTML(po.overall_status)}</span></td><td>${escapeHTML(po.risk_level)} / ${escapeHTML(po.fraud_level)}</td><td class="reason">${escapeHTML(po.primary_risk_reason)}</td></tr>`).join('')}</tbody></table>`;
+      $('table').querySelectorAll('tbody tr').forEach(row => row.addEventListener('click', () => showDetail(row.dataset.poId)));
+      $('pagination').hidden = pageCount <= 1;
+      $('page-label').textContent = `Page ${state.page} of ${pageCount}`;
+      $('previous-page').disabled = state.page === 1;
+      $('next-page').disabled = state.page === pageCount;
+    }
+    function showDetail(poId) {
+      selectedId = poId;
+      const po = allRecords.find(item => item.po_id === poId);
+      if (!po) return;
+      $('detail').hidden = false;
+      $('detail').innerHTML = `<div class="eyebrow">Selected purchase order</div><h3>${escapeHTML(po.po_id)} <span class="badge status-${escapeHTML(po.overall_status.toLowerCase())}">${escapeHTML(po.overall_status)}</span></h3><div class="detail-grid"><div><div class="detail-label">Overall score</div><div class="detail-value">${po.overall_score.toFixed(1)} / 100</div></div><div><div class="detail-label">Risk model</div><div class="detail-value">${po.risk_score.toFixed(1)} / 100 · ${escapeHTML(po.risk_level)}</div></div><div><div class="detail-label">Fraud model</div><div class="detail-value">${po.fraud_score.toFixed(1)} / 100 · ${escapeHTML(po.fraud_level)}${po.fraud_flag ? ' · flagged' : ''}</div></div><div><div class="detail-label">Supplier</div><div class="detail-value">${escapeHTML(po.supplier_id || 'Not provided')}</div></div><div class="detail-wide"><div class="detail-label">Risk signal</div><div class="detail-value">${escapeHTML(po.primary_risk_reason)}</div></div><div class="detail-wide"><div class="detail-label">Fraud signal</div><div class="detail-value">${escapeHTML(po.primary_fraud_reason)}</div></div></div><section class="memory-context" aria-label="Supplier memory"><div class="memory-context-head"><div><div class="detail-label">Supplier history</div><div class="memory-disclaimer">Historical context · excluded from scoring</div></div><span class="memory-context-state" id="memory-context-state">Loading</span></div><div class="memory-list" id="memory-list">Loading supplier context...</div><form class="outcome-form" id="outcome-form"><div class="outcome-field"><label for="outcome-text">Mitigation outcome</label><textarea id="outcome-text" required maxlength="1200" placeholder="Describe what happened after the action"></textarea></div><div class="outcome-field"><label for="related-action">Related action</label><input id="related-action" maxlength="160" placeholder="Optional"></div><button type="submit">Record</button></form><div class="outcome-status" id="outcome-status" role="status"></div></section>`;
+      loadSupplierMemory(po.supplier_id, po.po_date);
+      $('outcome-form').addEventListener('submit', event => recordOutcome(event, po));
+      renderExplorer();
+    }
+    async function loadSupplierMemory(supplierId, asOf) {
+      const requestId = ++memoryRequestId;
+      const stateLabel = $('memory-context-state');
+      const list = $('memory-list');
+      if (!supplierId) { stateLabel.textContent = 'Unavailable'; list.textContent = 'No supplier ID is available.'; return; }
+      stateLabel.textContent = 'Loading';
+      list.textContent = 'Loading supplier context...';
+      try {
+        const params = asOf ? `?as_of=${encodeURIComponent(asOf)}` : '';
+        const response = await fetch(`/suppliers/${encodeURIComponent(supplierId)}/memory${params}`);
+        if (!response.ok) throw new Error('Memory request failed');
+        const memories = await response.json();
+        if (requestId !== memoryRequestId) return;
+        stateLabel.textContent = memories.length ? `${memories.length} entries` : 'No history';
+        list.innerHTML = memories.length
+          ? `<ul>${memories.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul>`
+          : 'No prior supplier context.';
+      } catch {
+        if (requestId !== memoryRequestId) return;
+        stateLabel.textContent = 'Unavailable';
+        list.textContent = 'Supplier history is currently unavailable.';
+      }
+    }
+    async function recordOutcome(event, po) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const status = $('outcome-status');
+      button.disabled = true;
+      status.textContent = 'Queueing outcome...';
+      try {
+        const response = await fetch('/outcomes', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            supplier_id: po.supplier_id,
+            outcome: $('outcome-text').value,
+            related_action: $('related-action').value || null,
+          }),
+        });
+        if (!response.ok) throw new Error('Outcome could not be queued');
+        form.reset();
+        status.textContent = 'Outcome queued for Hindsight.';
+      } catch {
+        status.textContent = 'Hindsight is unavailable; outcome was not queued.';
+      } finally {
+        button.disabled = false;
+      }
+    }
+    async function loadMemoryHealth() {
+      const indicator = $('memory-health');
+      try {
+        const response = await fetch('/health');
+        if (!response.ok) throw new Error('Health request failed');
+        const health = await response.json();
+        const memoryState = health.memory || 'unreachable';
+        indicator.dataset.state = memoryState;
+        $('memory-status').textContent = `Memory: ${memoryState}`;
+      } catch {
+        indicator.dataset.state = 'unreachable';
+        $('memory-status').textContent = 'Memory: unreachable';
+      }
+    }
+    $('flag-dismiss').addEventListener('click', () => $('flag-dialog').close());
+    $('flag-dialog').addEventListener('close', showPendingFlag);
+    $('flag-review').addEventListener('click', () => {
+      const poId = flaggedPOToReview;
+      $('flag-dialog').close();
+      state.search = ''; state.status = 'ALL'; state.page = 1;
+      $('search').value = ''; $('status-filter').value = 'ALL';
+      applyFilters();
+      showDetail(poId);
+      $('detail').scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+    function updateMetricState() {
+      document.querySelectorAll('.metric').forEach(metric => metric.classList.toggle('active', metric.dataset.filter === state.status || (metric.dataset.filter === 'ALL' && state.status === 'ALL')));
+    }
+    function exportCsv() {
+      const headers = ['po_id', 'overall_score', 'overall_status', 'risk_score', 'risk_level', 'fraud_score', 'fraud_level', 'primary_risk_reason'];
+      const csv = [headers, ...visibleRecords.map(po => headers.map(header => String(po[header] ?? '').replaceAll('"', '""')))].map(row => row.map(value => `"${value}"`).join(',')).join('\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+      link.download = 'riskwise-visible-pos.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+    async function execute() {
+      run.disabled = true; run.textContent = 'Running...'; $('status').textContent = 'Scoring purchase orders';
+      try { const response = await fetch('/api/pipeline/run', {method:'POST'}); if (!response.ok) throw new Error(await response.text()); render(await response.json()); }
+      catch (error) { $('table').className='error'; $('table').textContent='Pipeline unavailable: ' + error.message; $('status').textContent='Run failed'; }
+      finally { run.disabled=false; run.textContent='Run pipeline'; }
+    }
+    run.addEventListener('click', execute);
+    $('search').addEventListener('input', event => { state.search = event.target.value; state.page = 1; applyFilters(); });
+    $('status-filter').addEventListener('change', event => { state.status = event.target.value; state.page = 1; applyFilters(); });
+    $('sort').addEventListener('change', event => { state.sort = event.target.value; state.page = 1; applyFilters(); });
+    $('page-size').addEventListener('change', event => { state.pageSize = Number(event.target.value); state.page = 1; applyFilters(); });
+    $('previous-page').addEventListener('click', () => { if (state.page > 1) { state.page -= 1; renderExplorer(); } });
+    $('next-page').addEventListener('click', () => { if (state.page < Math.ceil(visibleRecords.length / state.pageSize)) { state.page += 1; renderExplorer(); } });
+    $('clear').addEventListener('click', () => { state.search=''; state.status='ALL'; state.sort='score-desc'; state.page=1; $('search').value=''; $('status-filter').value='ALL'; $('sort').value='score-desc'; applyFilters(); });
+    $('export').addEventListener('click', exportCsv);
+    loadMemoryHealth();
+    document.querySelectorAll('.metric').forEach(metric => metric.addEventListener('click', () => { state.status = metric.dataset.filter; $('status-filter').value = state.status; applyFilters(); }));
+    if ('BroadcastChannel' in window) {
+      const procurementChannel = new BroadcastChannel('riskwise-procurement');
+      procurementChannel.addEventListener('message', event => { if (event.data?.type === 'po-submitted') execute(); });
+    }
+    execute();
+  </script>
+</body>
+</html>

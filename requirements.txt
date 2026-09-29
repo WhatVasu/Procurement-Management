@@ -6,3 +6,6 @@ pydantic>=2.0
 scikit-learn>=1.2
 uvicorn>=0.22
 pytest>=7.0
+langchain-core>=0.3
+langchain-groq>=0.2
+hindsight-all>=0.10.1

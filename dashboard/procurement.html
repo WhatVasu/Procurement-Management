@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RiskWise Procurement Desk</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&display=swap');
+    :root { --ink:#18201d; --muted:#68716d; --paper:#f4f1e9; --panel:#fffdf8; --line:#d9d7cf; --red:#bf3d2f; --red-soft:#f7ded7; --amber:#b57919; --green:#28684d; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:Manrope,sans-serif; }
+    body:before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.32; background-image:linear-gradient(rgba(24,32,29,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(24,32,29,.045) 1px,transparent 1px); background-size:32px 32px; }
+    main { position:relative; max-width:980px; margin:0 auto; padding:34px 28px 56px; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--red); font:500 12px 'DM Mono',monospace; text-transform:uppercase; }
+    .memory-health { display:flex; align-items:center; gap:7px; margin-top:16px; color:var(--muted); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
+    .memory-dot { width:7px; height:7px; border-radius:50%; background:var(--amber); }
+    .memory-health[data-state="up"] .memory-dot { background:var(--green); }
+    .memory-health[data-state="unreachable"] .memory-dot { background:var(--red); }
+    .memory-health[data-state="disabled"] .memory-dot { background:var(--muted); }
+    h1 { margin:8px 0 0; font-size:42px; line-height:1; }
+    header a { color:var(--ink); font-size:13px; font-weight:700; text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:4px; }
+    .intro { max-width:590px; margin:20px 0 24px; color:var(--muted); font-size:14px; line-height:1.6; }
+    form { border-top:1px solid var(--line); }
+    fieldset { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 22px; margin:0; padding:24px 0; border:0; border-bottom:1px solid var(--line); }
+    legend { float:left; width:100%; margin-bottom:18px; font-size:17px; font-weight:800; }
+    .field { display:grid; gap:7px; }
+    label { color:var(--muted); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
+    input { width:100%; min-height:44px; border:1px solid var(--line); border-radius:0; padding:11px 12px; background:var(--panel); color:var(--ink); font:500 13px 'DM Mono',monospace; }
+    input:focus { outline:2px solid var(--green); outline-offset:1px; }
+    .memory-context { margin:0 0 20px; padding:16px 0; border-bottom:1px solid var(--line); }
+    .memory-context-head { display:flex; justify-content:space-between; align-items:baseline; gap:16px; }
+    .memory-state, .memory-note { color:var(--muted); font:500 10px 'DM Mono',monospace; }
+    .memory-note { margin-top:5px; }
+    .memory-items { margin-top:12px; color:#4c5651; font-size:13px; line-height:1.55; }
+    .memory-items ul { margin:0; padding-left:18px; }
+    .memory-items li + li { margin-top:8px; }
+    .form-footer { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:20px 0; }
+    .form-footer p { margin:0; color:var(--muted); font-size:12px; line-height:1.5; }
+    button { min-height:46px; border:0; padding:0 20px; background:var(--ink); color:var(--panel); font:700 13px Manrope,sans-serif; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    #error { margin:12px 0; color:var(--red); font-size:13px; }
+    #result { margin-top:28px; padding:22px 0; border-top:3px solid var(--line); border-bottom:1px solid var(--line); }
+    #result.flagged { border-top-color:var(--red); }
+    #result.review { border-top-color:var(--amber); }
+    #result.approved { border-top-color:var(--green); }
+    .result-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+    .result-head h2 { margin:0; font-size:21px; }
+    .result-status { font:500 11px 'DM Mono',monospace; }
+    .result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:20px; }
+    .result-label { color:var(--muted); font:500 10px 'DM Mono',monospace; text-transform:uppercase; }
+    .result-value { margin-top:5px; font-size:14px; line-height:1.5; }
+    @media (max-width:620px) { main { padding:22px 16px 40px; } header { align-items:flex-start; flex-direction:column; } h1 { font-size:34px; } fieldset { grid-template-columns:1fr; gap:14px; } .form-footer { align-items:stretch; flex-direction:column; } button { width:100%; } .result-grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><div class="eyebrow">RiskWise / procurement desk</div><h1>Submit a purchase order</h1></div>
+      <a href="/">Open control room</a>
+    </header>
+    <div class="memory-health" id="memory-health" data-state="checking"><span class="memory-dot"></span><span id="memory-status">Memory: checking</span></div>
+    <p class="intro">Enter the purchase order details for an immediate supplier-risk assessment. Submitted orders appear in the control room with their assessment.</p>
+    <form id="po-form">
+      <fieldset>
+        <legend>Order details</legend>
+        <div class="field"><label for="po_id">PO ID</label><input id="po_id" name="po_id" required maxlength="80" placeholder="PO-2026-1042"></div>
+        <div class="field"><label for="po_date">PO date</label><input id="po_date" name="po_date" type="date" required></div>
+        <div class="field"><label for="supplier_id">Supplier ID</label><input id="supplier_id" name="supplier_id" required placeholder="S001"></div>
+        <div class="field"><label for="buyer_id">Buyer ID</label><input id="buyer_id" name="buyer_id" required placeholder="B001"></div>
+        <div class="field"><label for="department">Department</label><input id="department" name="department" required placeholder="Operations"></div>
+        <div class="field"><label for="currency">Currency</label><input id="currency" name="currency" required maxlength="3" value="USD"></div>
+        <div class="field"><label for="payment_terms">Payment terms</label><input id="payment_terms" name="payment_terms" required placeholder="Net 30"></div>
+        <div class="field"><label for="delivery_window_days">Delivery window (days)</label><input id="delivery_window_days" name="delivery_window_days" type="number" min="0.01" step="any" required></div>
+      </fieldset>
+      <section class="memory-context" aria-label="Supplier history">
+        <div class="memory-context-head"><div><div class="eyebrow">Supplier history</div><div class="memory-note">Historical context · excluded from scoring</div></div><span class="memory-state" id="supplier-memory-state">Enter supplier ID</span></div>
+        <div class="memory-items" id="supplier-memory-items">Prior supplier context will appear here.</div>
+      </section>
+      <fieldset>
+        <legend>Line item</legend>
+        <div class="field"><label for="product_id">Product ID</label><input id="product_id" name="product_id" required placeholder="P0001"></div>
+        <div class="field"><label for="quantity">Quantity</label><input id="quantity" name="quantity" type="number" min="0.01" step="any" required></div>
+        <div class="field"><label for="unit_price">Unit price</label><input id="unit_price" name="unit_price" type="number" min="0.01" step="any" required></div>
+      </fieldset>
+      <div class="form-footer"><p>Required fields are scored against the current RiskWise models.<br>The assessment will be added to the existing dashboard.</p><button id="submit" type="submit">Assess purchase order</button></div>
+    </form>
+    <div id="error" role="alert" hidden></div>
+    <section id="result" aria-live="polite" hidden>
+      <div class="result-head"><h2 id="result-title"></h2><span class="result-status" id="result-status"></span></div>
+      <div class="result-grid"><div><div class="result-label">Overall score</div><div class="result-value" id="result-score"></div></div><div><div class="result-label">Supplier risk</div><div class="result-value" id="result-risk"></div></div><div><div class="result-label">Fraud signal</div><div class="result-value" id="result-fraud"></div></div><div><div class="result-label">Risk reason</div><div class="result-value" id="result-reason"></div></div><div><div class="result-label">Dashboard</div><div class="result-value" id="result-dashboard"></div></div></div>
+    </section>
+  </main>
+  <script>
+    const form = document.getElementById('po-form');
+    const submitButton = document.getElementById('submit');
+    const result = document.getElementById('result');
+    const supplierInput = document.getElementById('supplier_id');
+    let supplierMemoryRequest = 0;
+    document.getElementById('po_date').value = new Date().toISOString().slice(0, 10);
+
+    async function loadMemoryHealth() {
+      const indicator = document.getElementById('memory-health');
+      try {
+        const response = await fetch('/health');
+        if (!response.ok) throw new Error('Health request failed');
+        const health = await response.json();
+        const memoryState = health.memory || 'unreachable';
+        indicator.dataset.state = memoryState;
+        document.getElementById('memory-status').textContent = `Memory: ${memoryState}`;
+      } catch {
+        indicator.dataset.state = 'unreachable';
+        document.getElementById('memory-status').textContent = 'Memory: unreachable';
+      }
+    }
+
+    async function loadSupplierMemory() {
+      const supplierId = supplierInput.value.trim();
+      const requestId = ++supplierMemoryRequest;
+      const state = document.getElementById('supplier-memory-state');
+      const items = document.getElementById('supplier-memory-items');
+      if (!supplierId) {
+        state.textContent = 'Enter supplier ID';
+        items.textContent = 'Prior supplier context will appear here.';
+        return;
+      }
+      state.textContent = 'Loading';
+      items.textContent = 'Loading supplier context...';
+      try {
+        const asOf = document.getElementById('po_date').value;
+        const params = asOf ? `?as_of=${encodeURIComponent(asOf)}` : '';
+        const response = await fetch(`/suppliers/${encodeURIComponent(supplierId)}/memory${params}`);
+        if (!response.ok) throw new Error('Memory request failed');
+        const memories = await response.json();
+        if (requestId !== supplierMemoryRequest) return;
+        state.textContent = memories.length ? `${memories.length} entries` : 'No history';
+        items.innerHTML = memories.length
+          ? `<ul>${memories.map(item => `<li>${escapeHTML(item)}</li>`).join('')}</ul>`
+          : 'No prior supplier context.';
+      } catch {
+        if (requestId !== supplierMemoryRequest) return;
+        state.textContent = 'Unavailable';
+        items.textContent = 'Supplier history is currently unavailable.';
+      }
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+    }
+
+    supplierInput.addEventListener('change', loadSupplierMemory);
+    document.getElementById('po_date').addEventListener('change', loadSupplierMemory);
+    loadMemoryHealth();
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(form));
+      for (const field of ['delivery_window_days', 'quantity', 'unit_price']) payload[field] = Number(payload[field]);
+      submitButton.disabled = true;
+      submitButton.textContent = 'Assessing...';
+      document.getElementById('error').hidden = true;
+      result.hidden = true;
+      try {
+        const response = await fetch('/api/procurement/submit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        });
+        const assessment = await response.json();
+        if (!response.ok) throw new Error(assessment.detail || 'Unable to assess purchase order');
+        const flagged = assessment.overall_status === 'ESCALATE';
+        result.className = flagged ? 'flagged' : assessment.overall_status === 'REVIEW' ? 'review' : 'approved';
+        document.getElementById('result-title').textContent = flagged ? 'PO flagged for review' : 'Assessment complete';
+        document.getElementById('result-status').textContent = assessment.overall_status;
+        document.getElementById('result-score').textContent = `${assessment.overall_score.toFixed(1)} / 100`;
+        document.getElementById('result-risk').textContent = `${assessment.risk_level} · ${assessment.risk_score.toFixed(1)}`;
+        document.getElementById('result-fraud').textContent = `${assessment.fraud_level} · ${assessment.primary_fraud_reason}`;
+        document.getElementById('result-reason').textContent = assessment.primary_risk_reason;
+        document.getElementById('result-dashboard').textContent = flagged
+          ? 'A review alert will appear in the control room.'
+          : 'This PO is now available in the control room.';
+        result.hidden = false;
+        if ('BroadcastChannel' in window) {
+          const channel = new BroadcastChannel('riskwise-procurement');
+          channel.postMessage({type: 'po-submitted', poId: assessment.po_id, flagged});
+          channel.close();
+        }
+      } catch (error) {
+        const errorBox = document.getElementById('error');
+        errorBox.textContent = error.message;
+        errorBox.hidden = false;
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Assess purchase order';
+      }
+    });
+  </script>
+</body>
+</html>

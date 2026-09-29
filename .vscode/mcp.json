@@ -1,0 +1,19 @@
+{
+  "servers": {
+    "hindsight": {
+      "type": "http",
+      "url": "https://api.hindsight.vectorize.io/mcp/procurement-risk/",
+      "headers": {
+        "Authorization": "Bearer ${hsk_142e0c4383d21d953da6b71c3e4bb629_e61eefa81b05b93f}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "hindsight-api-key",
+      "type": "promptString",
+      "description": "Hindsight Cloud API key",
+      "password": true
+    }
+  ]
+}

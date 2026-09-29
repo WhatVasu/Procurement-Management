@@ -8,6 +8,11 @@ __pycache__/
 venv/
 env/
 
+# Local environment variables and secrets
+.env
+.env.*
+!.env.example
+
 # Build and test output
 build/
 dist/
@@ -18,7 +23,9 @@ htmlcov/
 
 # Local tooling and operating-system files
 .idea/
-.vscode/
+!.vscode/
+.vscode/*
+!.vscode/mcp.json
 .DS_Store
 Thumbs.db
 
